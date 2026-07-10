@@ -4,5 +4,5 @@ APP_VERSION = "v1.0"
 DEFAULT_TOL = 1e-6
 DEFAULT_MAX_ITER = 150
 
-LINE = "─" * 60
-DOUBLE_LINE = "═" * 60
+LINE = "-" * 60
+DOUBLE_LINE = "=" * 60

@@ -26,6 +26,7 @@ from core.parser import construir_funcion
 from codigo.biseccion import biseccion
 from codigo.newton_raices import newton
 from codigo.secante import secante
+from codigo.ejercicios import menu_ejercicios_predefinidos
 from codigo.gauss_pivoteo import gauss_pivoteo_parcial
 from codigo.gauss_seidel import gauss_seidel
 from codigo.newton_interpolacion import newt_int
@@ -59,12 +60,13 @@ def menu_principal():
 def menu_raices():
     while True:
         titulo_principal("MÓDULO DE RAÍCES DE FUNCIONES")
-        print("1. Bisección")
-        print("2. Newton")
-        print("3. Secante")
+        print("1. Bisección (Manual)")
+        print("2. Newton (Manual)")
+        print("3. Secante (Manual)")
+        print("4. Resolver Ejercicios Propuestos (Ej 6, Ej 7, Abrevadero)")
         print("0. Volver")
 
-        opcion = pedir_opcion("\nSeleccione una opción: ", ["1", "2", "3", "0"])
+        opcion = pedir_opcion("\nSeleccione una opción: ", ["1", "2", "3", "4", "0"])
 
         if opcion == "1":
             try:
@@ -74,8 +76,6 @@ def menu_raices():
                 tol = pedir_float_positivo("Ingrese la tolerancia: ")
                 resultado = biseccion(func, a, b, tol=tol, max_iter=DEFAULT_MAX_ITER)
                 mostrar_resultado_texto("RESULTADOS - BISECCIÓN", str(resultado))
-            except NotImplementedError as e:
-                mensaje_info(f"Método pendiente de integración: {e}")
             except Exception as e:
                 mensaje_error(f"Error al ejecutar Bisección: {e}")
             pausa()
@@ -90,8 +90,6 @@ def menu_raices():
                 tol = pedir_float_positivo("Ingrese la tolerancia: ")
                 resultado = newton(func, dfunc, x0, tol=tol, max_iter=DEFAULT_MAX_ITER)
                 mostrar_resultado_texto("RESULTADOS - NEWTON", str(resultado))
-            except NotImplementedError as e:
-                mensaje_info(f"Método pendiente de integración: {e}")
             except Exception as e:
                 mensaje_error(f"Error al ejecutar Newton: {e}")
             pausa()
@@ -105,11 +103,12 @@ def menu_raices():
                 tol = pedir_float_positivo("Ingrese la tolerancia: ")
                 resultado = secante(func, x0, x1, tol=tol, max_iter=DEFAULT_MAX_ITER)
                 mostrar_resultado_texto("RESULTADOS - SECANTE", str(resultado))
-            except NotImplementedError as e:
-                mensaje_info(f"Método pendiente de integración: {e}")
             except Exception as e:
                 mensaje_error(f"Error al ejecutar Secante: {e}")
             pausa()
+
+        elif opcion == "4":
+            menu_ejercicios_predefinidos()
 
         elif opcion == "0":
             break
