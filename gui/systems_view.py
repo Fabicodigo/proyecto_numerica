@@ -9,12 +9,12 @@ class SystemsView(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
 
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(0, weight=1, minsize=420)
+        self.grid_columnconfigure(1, weight=2)
         self.grid_rowconfigure(0, weight=1)
 
         # Panel izquierdo
-        self.left_panel = ctk.CTkFrame(self)
+        self.left_panel = ctk.CTkScrollableFrame(self)
         self.left_panel.grid(row=0, column=0, padx=(20, 10), pady=20, sticky="nsew")
         self.left_panel.grid_columnconfigure(0, weight=1)
 
@@ -250,15 +250,19 @@ class SystemsView(ctk.CTkFrame):
 
                 if isinstance(result, dict):
                     solution = result.get("solution")
-                    summary.append(f"Estado: {result.get('message', 'Sin mensaje')}")
+                    summary.append(f"Estado: {result.get('message', 'Sin mensaje')}\n")
+                    if "steps" in result:
+                        summary.append(result["steps"])
                     if solution is not None:
-                        summary.append(f"Solución: {solution}")
+                        sol_str = "[" + ", ".join(f"{x:.6f}" for x in solution) + "]"
+                        summary.append(f"\nSolución final: {sol_str}")
                         self.setup_solution_table(solution)
                     else:
                         self.clear_table()
                 else:
                     solution = result
-                    summary.append(f"Solución: {solution}")
+                    sol_str = "[" + ", ".join(f"{x:.6f}" for x in solution) + "]" if isinstance(solution, list) else str(solution)
+                    summary.append(f"Solución: {sol_str}")
                     self.setup_solution_table(solution)
 
                 self.write_result("\n".join(map(str, summary)))
@@ -274,9 +278,18 @@ class SystemsView(ctk.CTkFrame):
                 summary.append("=== GAUSS-SEIDEL ===\n")
 
                 if isinstance(result, dict):
-                    summary.append(f"Estado: {result.get('message', 'Sin mensaje')}")
-                    summary.append(f"Solución aproximada: {result.get('solution', 'N/A')}")
-                    summary.append(f"Iteraciones: {len(result.get('iterations', []))}")
+                    summary.append(f"Estado: {result.get('message', 'Sin mensaje')}\n")
+                    if "steps" in result:
+                        summary.append(result["steps"])
+                    
+                    sol = result.get('solution')
+                    if isinstance(sol, list):
+                        sol_str = "[" + ", ".join(f"{x:.6f}" for x in sol) + "]"
+                        summary.append(f"\nSolución aproximada: {sol_str}")
+                    else:
+                        summary.append(f"\nSolución aproximada: N/A")
+                        
+                    summary.append(f"Iteraciones: {len(result.get('iterations', [])) - 1}")
                     self.setup_iterations_table(result.get("iterations", []))
                 else:
                     summary.append(f"Resultado: {result}")
