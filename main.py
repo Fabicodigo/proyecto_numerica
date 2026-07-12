@@ -27,6 +27,7 @@ from codigo.biseccion import biseccion
 from codigo.newton_raices import newton
 from codigo.secante import secante
 from codigo.ejercicios import menu_ejercicios_predefinidos
+from codigo.guia_problemas_18 import menu_guia_18
 from codigo.gauss_pivoteo import gauss_pivoteo_parcial
 from codigo.gauss_seidel import gauss_seidel
 from codigo.newton_interpolacion import newt_int
@@ -162,9 +163,10 @@ def menu_interpolacion():
         titulo_principal("MÓDULO DE INTERPOLACIÓN")
         print("1. Newton")
         print("2. Lagrange")
+        print("3. Resolver Guía de Problemas 18 (18.5, 18.7, 18.8)")
         print("0. Volver")
 
-        opcion = pedir_opcion("\nSeleccione una opción: ", ["1", "2", "0"])
+        opcion = pedir_opcion("\nSeleccione una opción: ", ["1", "2", "3", "0"])
 
         if opcion == "1":
             x, y = pedir_puntos_xy()
@@ -197,6 +199,9 @@ def menu_interpolacion():
                 mensaje_error(f"Error al ejecutar Lagrange: {e}")
 
             pausa()
+
+        elif opcion == "3":
+            menu_guia_18()
 
         elif opcion == "0":
             break
