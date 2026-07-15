@@ -95,7 +95,10 @@ class IntegrationView(ctk.CTkFrame):
         self.result_label = ctk.CTkLabel(self.left_panel, text="Resultados:")
         self.result_label.grid(row=12, column=0, padx=20, pady=(10, 0), sticky="w")
 
-        self.result_box = ctk.CTkTextbox(self.left_panel, height=230)
+        self.result_box = ctk.CTkTextbox(
+            self.left_panel, height=520, wrap="word",
+            font=ctk.CTkFont(family="Consolas", size=13)
+        )
         self.result_box.grid(row=13, column=0, padx=20, pady=(5, 20), sticky="nsew")
         self.result_box.insert("1.0", "Aquí aparecerán los resultados...\n")
         self.result_box.configure(state="disabled")
@@ -173,15 +176,43 @@ class IntegrationView(ctk.CTkFrame):
 
             func = construir_funcion(expr)
 
+            h = (b - a) / n
+
             if method == "Trapecio":
                 result = trapm_func(func, a, b, n)
 
+                # Refinamiento con el doble de segmentos para estimar el
+                # error (extrapolación de Richardson: E ~ (I_2n - I_n)/3).
+                result_2n = trapm_func(func, a, b, 2 * n)
+                error_est = (result_2n - result) / 3.0
+                extrapolado = result_2n + error_est
+
+                sep = "-" * 34
+
                 result_text = []
-                result_text.append("=== REGLA DEL TRAPECIO ===\n")
-                result_text.append(f"f(x) = {expr}")
-                result_text.append(f"Intervalo: [{a}, {b}]")
-                result_text.append(f"n = {n}")
-                result_text.append(f"Integral aproximada = {result:.6f}")
+                result_text.append("=== REGLA DEL TRAPECIO ===")
+                result_text.append("")
+                result_text.append("DATOS DE ENTRADA")
+                result_text.append(sep)
+                result_text.append(f"Función:    f(x) = {expr}")
+                result_text.append(f"Intervalo:  [{a:g}, {b:g}]")
+                result_text.append(f"Segmentos:  n = {n}")
+                result_text.append(f"Ancho:      h = {h:.6f}")
+                result_text.append(f"Nodos:      {n + 1}")
+                result_text.append("")
+                result_text.append("RESULTADOS")
+                result_text.append(sep)
+                result_text.append(f"I con n = {n:<4}  {result:.6f}")
+                result_text.append(f"I con n = {2 * n:<4}  {result_2n:.6f}")
+                result_text.append("")
+                result_text.append("ESTIMACIÓN DE ERROR (RICHARDSON)")
+                result_text.append(sep)
+                result_text.append(f"Error estimado:    {error_est:.6e}")
+                result_text.append(f"Valor extrapolado: {extrapolado:.6f}")
+                result_text.append("")
+                result_text.append("El trapecio tiene error O(h^2):")
+                result_text.append("al duplicar n, el error se reduce")
+                result_text.append("aproximadamente 4 veces.")
 
                 self.write_result("\n".join(result_text))
                 self.plot_integration(func, a, b, n, method, result)
@@ -189,12 +220,38 @@ class IntegrationView(ctk.CTkFrame):
             elif method == "Simpson":
                 result = simp_int_func(func, a, b, n)
 
+                # Refinamiento con el doble de segmentos para estimar el
+                # error (extrapolación de Richardson: E ~ (I_2n - I_n)/15).
+                result_2n = simp_int_func(func, a, b, 2 * n)
+                error_est = (result_2n - result) / 15.0
+                extrapolado = result_2n + error_est
+
+                sep = "-" * 34
+
                 result_text = []
-                result_text.append("=== REGLA DE SIMPSON ===\n")
-                result_text.append(f"f(x) = {expr}")
-                result_text.append(f"Intervalo: [{a}, {b}]")
-                result_text.append(f"n = {n}")
-                result_text.append(f"Integral aproximada = {result:.6f}")
+                result_text.append("=== REGLA DE SIMPSON ===")
+                result_text.append("")
+                result_text.append("DATOS DE ENTRADA")
+                result_text.append(sep)
+                result_text.append(f"Función:    f(x) = {expr}")
+                result_text.append(f"Intervalo:  [{a:g}, {b:g}]")
+                result_text.append(f"Segmentos:  n = {n}")
+                result_text.append(f"Ancho:      h = {h:.6f}")
+                result_text.append(f"Nodos:      {n + 1}")
+                result_text.append("")
+                result_text.append("RESULTADOS")
+                result_text.append(sep)
+                result_text.append(f"I con n = {n:<4}  {result:.6f}")
+                result_text.append(f"I con n = {2 * n:<4}  {result_2n:.6f}")
+                result_text.append("")
+                result_text.append("ESTIMACIÓN DE ERROR (RICHARDSON)")
+                result_text.append(sep)
+                result_text.append(f"Error estimado:    {error_est:.6e}")
+                result_text.append(f"Valor extrapolado: {extrapolado:.6f}")
+                result_text.append("")
+                result_text.append("Simpson 1/3 tiene error O(h^4):")
+                result_text.append("al duplicar n, el error se reduce")
+                result_text.append("aproximadamente 16 veces.")
 
                 self.write_result("\n".join(result_text))
                 self.plot_integration(func, a, b, n, method, result)

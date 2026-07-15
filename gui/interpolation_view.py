@@ -85,7 +85,10 @@ class InterpolationView(ctk.CTkFrame):
         self.result_label = ctk.CTkLabel(self.left_panel, text="Resultados:")
         self.result_label.grid(row=10, column=0, padx=20, pady=(10, 0), sticky="w")
 
-        self.result_box = ctk.CTkTextbox(self.left_panel, height=250)
+        self.result_box = ctk.CTkTextbox(
+            self.left_panel, height=520, wrap="word",
+            font=ctk.CTkFont(family="Consolas", size=13)
+        )
         self.result_box.grid(row=11, column=0, padx=20, pady=(5, 20), sticky="nsew")
         self.result_box.insert("1.0", "Aquí aparecerán los resultados...\n")
         self.result_box.configure(state="disabled")
@@ -177,16 +180,41 @@ class InterpolationView(ctk.CTkFrame):
                 yint, ea = newt_int(x, y, xi)
                 yi = yint[-1]
 
+                grado = len(x) - 1
+                sep = "-" * 34
+
                 result_text = []
-                result_text.append("=== INTERPOLACIÓN DE NEWTON ===\n")
-                result_text.append(f"xi = {xi}")
-                result_text.append(f"Resultado final = {yi:.6f}\n")
-                result_text.append("Evolución por grado:")
+                result_text.append("=== INTERPOLACIÓN DE NEWTON ===")
+                result_text.append("")
+                result_text.append("DATOS DE ENTRADA")
+                result_text.append(sep)
+                result_text.append(f"Puntos:      {len(x)}")
+                result_text.append(f"Grado máx.:  {grado}")
+                result_text.append(f"Interpolar:  xi = {xi}")
+                result_text.append("")
+                result_text.append("RESULTADO")
+                result_text.append(sep)
+                result_text.append(f"f({xi:g}) ≈ {yi:.6f}   (grado {grado})")
+                result_text.append("")
+                result_text.append("EVOLUCIÓN POR GRADO")
+                result_text.append(sep)
+                result_text.append(f"{'Grado':<6}{'Estimación':>13}{'Error aprox.':>14}")
                 for i, val in enumerate(yint):
-                    result_text.append(f"  Grado {i}: {val:.6f}")
-                result_text.append("\nErrores aproximados:")
-                for i, err in enumerate(ea):
-                    result_text.append(f"  Error grado {i}: {err}")
+                    err_str = f"{ea[i]:>14.4e}" if not np.isnan(ea[i]) else f"{'---':>14}"
+                    result_text.append(f"{i:<6}{val:>13.6f}{err_str}")
+
+                # Último error aproximado disponible (indica convergencia)
+                errores_validos = [e for e in ea if not np.isnan(e)]
+                result_text.append("")
+                result_text.append("INTERPRETACIÓN")
+                result_text.append(sep)
+                if errores_validos:
+                    result_text.append(f"Último error aprox.: {errores_validos[-1]:.4e}")
+                    result_text.append("")
+                result_text.append("El error ea[k] mide cuánto cambia")
+                result_text.append("la estimación al subir un grado:")
+                result_text.append("si se anula, agregar más puntos ya")
+                result_text.append("no mejora la interpolación.")
 
                 self.write_result("\n".join(result_text))
                 self.plot_interpolation(method, x, y, xi, yi)
@@ -194,10 +222,38 @@ class InterpolationView(ctk.CTkFrame):
             elif method == "Lagrange":
                 yi = self.eval_lagrange(x, y, xi)
 
+                grado = len(x) - 1
+                sep = "-" * 34
+
                 result_text = []
-                result_text.append("=== INTERPOLACIÓN DE LAGRANGE ===\n")
-                result_text.append(f"xi = {xi}")
-                result_text.append(f"Resultado final = {yi:.6f}")
+                result_text.append("=== INTERPOLACIÓN DE LAGRANGE ===")
+                result_text.append("")
+                result_text.append("DATOS DE ENTRADA")
+                result_text.append(sep)
+                result_text.append(f"Puntos:      {len(x)}")
+                result_text.append(f"Grado:       {grado}")
+                result_text.append(f"Interpolar:  xi = {xi}")
+                result_text.append("")
+                result_text.append("RESULTADO")
+                result_text.append(sep)
+                result_text.append(f"f({xi:g}) ≈ {yi:.6f}   (grado {grado})")
+                result_text.append("")
+
+                # Verificación cruzada: el polinomio interpolante es único,
+                # por lo que Newton con los mismos puntos debe coincidir.
+                yint_newton, _ = newt_int(x, y, xi)
+                dif = abs(yi - yint_newton[-1])
+                result_text.append("VERIFICACIÓN CON NEWTON")
+                result_text.append(sep)
+                result_text.append(f"Lagrange:    {yi:.6f}")
+                result_text.append(f"Newton:      {yint_newton[-1]:.6f}")
+                result_text.append(f"Diferencia:  {dif:.2e}")
+                result_text.append("")
+                result_text.append("Coinciden porque el polinomio")
+                result_text.append("interpolante que pasa por un conjunto")
+                result_text.append("de puntos es único: Newton y Lagrange")
+                result_text.append("son dos formas de escribir el mismo")
+                result_text.append("polinomio.")
 
                 self.write_result("\n".join(result_text))
                 self.plot_interpolation(method, x, y, xi, yi)

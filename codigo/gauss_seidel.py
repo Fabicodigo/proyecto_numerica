@@ -53,7 +53,7 @@ def gauss_seidel(A, b, x0=None, tol=1e-6, max_iter=150):
     log("=== INICIO: ITERACIÓN DE GAUSS-SEIDEL ===")
     log("Evaluando Dominancia Diagonal Estricta (DDE):")
     if is_sdd:
-        log("[✓] La matriz es estrictamente diagonal dominante. Convergencia garantizada.\n")
+        log("[OK] La matriz es estrictamente diagonal dominante. Convergencia garantizada.\n")
     else:
         log("[!] ADVERTENCIA: La matriz NO es estrictamente diagonal dominante.")
         log("Detalles de filas no dominantes:")
@@ -120,7 +120,7 @@ def gauss_seidel(A, b, x0=None, tol=1e-6, max_iter=150):
         # Comprobar criterio de parada
         if max_err < tol:
             print("-" * len(headers))
-            print(f"[✓] CONVERGENCIA ALCANZADA en la iteracion {k} con un error de {max_err:.8f}%.")
+            print(f"[OK] CONVERGENCIA ALCANZADA en la iteracion {k} con un error de {max_err:.8f}%.")
             converged = True
             break
             

@@ -27,7 +27,7 @@ from codigo.biseccion import biseccion
 from codigo.newton_raices import newton
 from codigo.secante import secante
 from codigo.ejercicios import menu_ejercicios_predefinidos
-from codigo.guia_problemas_18 import menu_guia_18
+from codigo.problemas_seccion_18 import menu_guia_18
 from codigo.gauss_pivoteo import gauss_pivoteo_parcial
 from codigo.gauss_seidel import gauss_seidel
 from codigo.newton_interpolacion import newt_int

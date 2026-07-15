@@ -121,7 +121,10 @@ class RootsView(ctk.CTkFrame):
         self.result_label = ctk.CTkLabel(self.left_panel, text="Resumen:")
         self.result_label.grid(row=18, column=0, padx=20, pady=(10, 0), sticky="w")
 
-        self.result_box = ctk.CTkTextbox(self.left_panel, height=180)
+        self.result_box = ctk.CTkTextbox(
+            self.left_panel, height=520, wrap="word",
+            font=ctk.CTkFont(family="Consolas", size=13)
+        )
         self.result_box.grid(row=19, column=0, padx=20, pady=(5, 20), sticky="nsew")
         self.result_box.insert("1.0", "Aquí aparecerá el resumen del método.\n")
         self.result_box.configure(state="disabled")
@@ -497,6 +500,8 @@ class RootsView(ctk.CTkFrame):
                         return
                     raise e
 
+                config_lines = [f"Intervalo:   [{a}, {b}]"]
+
             elif method == "Newton":
                 d_expr = self.dfunc_entry.get().strip()
                 if d_expr == "":
@@ -517,6 +522,11 @@ class RootsView(ctk.CTkFrame):
 
                 result = newton(func, dfunc, x0, tol=tol, max_iter=150, plot_evolution=False, domain_grafico=(domain_min, domain_max))
 
+                config_lines = [
+                    f"Derivada:    f'(x) = {d_expr}",
+                    f"x0 inicial:  {x0}",
+                ]
+
             elif method == "Secante":
                 try:
                     x0 = float(self.param1_entry.get())
@@ -527,14 +537,65 @@ class RootsView(ctk.CTkFrame):
 
                 result = secante(func, x0, x1, tol=tol, max_iter=150, plot_evolution=False, domain_grafico=(domain_min, domain_max))
 
+                config_lines = [f"Iniciales:   x0 = {x0}, x1 = {x1}"]
+
             self.start_animation(func, domain_min, domain_max, result["iterations"], result.get("root"), method)
 
+            iterations = result.get("iterations", [])
+            root = result.get("root")
+            f_root = result.get("f_root")
+
+            # Último error relativo aproximado registrado
+            last_err = None
+            for it in reversed(iterations):
+                if it.get("error") is not None:
+                    last_err = it["error"]
+                    break
+
+            sep = "-" * 34
+
             summary = []
-            summary.append(f"=== {method.upper()} ===\n")
-            summary.append(f"Estado: {result.get('message', 'Sin mensaje')}")
-            summary.append(f"Raíz aproximada: {result.get('root', 'N/A')}")
-            summary.append(f"f(raíz): {result.get('f_root', 'N/A')}")
-            summary.append(f"Iteraciones: {len(result.get('iterations', []))}")
+            summary.append(f"====== {method.upper()} ======")
+            summary.append("")
+            summary.append("DATOS DE ENTRADA")
+            summary.append(sep)
+            summary.append(f"Función:     f(x) = {expr}")
+            summary.extend(config_lines)
+            summary.append(f"Tolerancia:  {tol:g}")
+            summary.append("Máx. iter.:  150")
+            summary.append("")
+            summary.append("RESULTADOS")
+            summary.append(sep)
+            summary.append(f"Estado:      {result.get('message', 'Sin mensaje')}")
+            summary.append(f"Convergió:   {'Sí' if result.get('success') else 'No'}")
+            summary.append(f"Iteraciones: {len(iterations)}")
+            if isinstance(root, (int, float)):
+                summary.append(f"Raíz:        x = {root:.10f}")
+            else:
+                summary.append(f"Raíz:        {root}")
+            if isinstance(f_root, (int, float)):
+                summary.append(f"f(raíz):     {f_root:.6e}")
+            else:
+                summary.append(f"f(raíz):     {f_root}")
+            if last_err is not None:
+                summary.append(f"Error final: {last_err:.6e}")
+            else:
+                summary.append("Error final: N/A (una sola iteración)")
+
+            if isinstance(f_root, (int, float)):
+                cumple = abs(f_root) <= tol
+                summary.append("")
+                summary.append("VERIFICACIÓN")
+                summary.append(sep)
+                summary.append(f"|f(raíz)| = {abs(f_root):.6e}")
+                summary.append(f"tolerancia = {tol:g}")
+                if cumple:
+                    summary.append("=> |f(raíz)| <= tol:")
+                    summary.append("   la raíz satisface la tolerancia.")
+                else:
+                    summary.append("=> |f(raíz)| > tol:")
+                    summary.append("   convergió por error relativo,")
+                    summary.append("   no por el valor de |f(x)|.")
 
             self.write_result("\n".join(map(str, summary)))
 

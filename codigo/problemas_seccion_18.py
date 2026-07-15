@@ -1,7 +1,7 @@
 """
 Guía de problemas — Chapra, Capítulo 18 (Interpolación).
 
-Resolución con código de los problemas 18.5, 18.7 y 18.8 de
+Resolución con código de los problemas 18.5, 18.6 y 18.7 de
 Chapra & Canale, "Métodos numéricos para ingenieros".
 
 No se reescribe ningún método: se reutilizan las implementaciones
@@ -16,7 +16,7 @@ from codigo.lagrange_interpolacion import lagrange
 from codigo.biseccion import biseccion
 
 # ----------------------------------------------------------------------
-# Datos de la tabla (problemas 18.5 y 18.7). Provienen exactamente del
+# Datos de la tabla (problemas 18.5 y 18.6). Provienen exactamente del
 # polinomio f(x) = x^3 - x^2 - x + 4, por lo que el valor verdadero de
 # la interpolación en x = 4 es f(4) = 48.
 # ----------------------------------------------------------------------
@@ -57,15 +57,15 @@ def run_problema_18_5():
     return yint
 
 
-def run_problema_18_7():
+def run_problema_18_6():
     """
-    Problema 18.7 — Interpolación de Lagrange (órdenes 1 a 3).
+    Problema 18.6 — Interpolación de Lagrange (órdenes 1 a 3).
 
     A diferencia de Newton, lagrange entrega una sola estimación por
     conjunto de nodos, así que se hace una llamada por orden con los
     nodos más cercanos a xi = 4. Se compara con Newton (18.5).
     """
-    subtitulo("PROBLEMA 18.7 - INTERPOLACION DE LAGRANGE (ordenes 1 a 3)")
+    subtitulo("PROBLEMA 18.6 - INTERPOLACION DE LAGRANGE (ordenes 1 a 3)")
 
     casos = {
         1: ([3, 5], [19, 99]),
@@ -85,7 +85,7 @@ def run_problema_18_7():
     yint, _ = newt_int([3, 5, 2, 7, 1], [19, 99, 6, 291, 3], XI)
 
     print("\n" + "=" * 40)
-    print("COMPARACIÓN NEWTON (18.5) vs LAGRANGE (18.7)")
+    print("COMPARACIÓN NEWTON (18.5) vs LAGRANGE (18.6)")
     print("=" * 40)
     print(f"{'Orden':>5} | {'Newton':>10} | {'Lagrange':>10}")
     print("-" * 33)
@@ -99,16 +99,16 @@ def run_problema_18_7():
     return resultados
 
 
-def run_problema_18_8(plot_evolution=False):
+def run_problema_18_7(plot_evolution=False):
     """
-    Problema 18.8 — Interpolación inversa (cúbica + bisección).
+    Problema 18.7 — Interpolación inversa (cúbica + bisección).
 
     Dada la tabla de f(x) = 1/x, se busca el x tal que f(x) = 0.23.
     Se construye el polinomio cúbico de Newton con los 4 puntos más
     cercanos {3, 4, 5, 6} y se resuelve g(x) = p(x) - 0.23 = 0 con el
     método de bisección del proyecto en [4, 5] (hay cambio de signo).
     """
-    subtitulo("PROBLEMA 18.8 - INTERPOLACION INVERSA (cubica + biseccion)")
+    subtitulo("PROBLEMA 18.7 - INTERPOLACION INVERSA (cubica + biseccion)")
 
     # Tabla de f(x) = 1/x (se corrige el error de transcripción del
     # enunciado: f(7) = 0.1429, no 1.1429).
@@ -136,7 +136,7 @@ def run_problema_18_8(plot_evolution=False):
     raiz = resultado["raiz"]
 
     print("=" * 70)
-    print("RESULTADOS FINALES - PROBLEMA 18.8")
+    print("RESULTADOS FINALES - PROBLEMA 18.7")
     print("=" * 70)
     print(f"x tal que f(x) = {objetivo}:      x = {raiz:.6f}")
     print(f"Verificación con el cúbico:   p({raiz:.6f}) = {p(raiz):.6f}")
@@ -153,8 +153,8 @@ def menu_guia_18():
     while True:
         titulo_principal("GUÍA DE PROBLEMAS 18 - CHAPRA (INTERPOLACIÓN)")
         print("1. Problema 18.5 (Newton, órdenes 1 a 4)")
-        print("2. Problema 18.7 (Lagrange, órdenes 1 a 3 + comparación)")
-        print("3. Problema 18.8 (Interpolación inversa: cúbica + bisección)")
+        print("2. Problema 18.6 (Lagrange, órdenes 1 a 3 + comparación)")
+        print("3. Problema 18.7 (Interpolación inversa: cúbica + bisección)")
         print("4. Ejecutar TODOS los problemas de una vez")
         print("0. Volver")
 
@@ -163,7 +163,7 @@ def menu_guia_18():
         if opcion == "0":
             break
 
-        # La graficación interactiva solo aplica al 18.8 (bisección).
+        # La graficación interactiva solo aplica al 18.7 (bisección).
         plot_evolution = False
         if opcion in ("3", "4"):
             graf_opc = pedir_opcion("¿Desea activar la graficación interactiva paso a paso? (s/n): ", ["s", "n"])
@@ -178,26 +178,26 @@ def menu_guia_18():
 
         elif opcion == "2":
             try:
-                run_problema_18_7()
+                run_problema_18_6()
             except Exception as e:
-                print(f"[ERROR] Ocurrió un error en el Problema 18.7: {e}")
+                print(f"[ERROR] Ocurrió un error en el Problema 18.6: {e}")
             pausa()
 
         elif opcion == "3":
             try:
-                run_problema_18_8(plot_evolution=plot_evolution)
+                run_problema_18_7(plot_evolution=plot_evolution)
             except Exception as e:
-                print(f"[ERROR] Ocurrió un error en el Problema 18.8: {e}")
+                print(f"[ERROR] Ocurrió un error en el Problema 18.7: {e}")
             pausa()
 
         elif opcion == "4":
             try:
                 mensaje_info("Ejecutando Problema 18.5...")
                 run_problema_18_5()
+                mensaje_info("Ejecutando Problema 18.6...")
+                run_problema_18_6()
                 mensaje_info("Ejecutando Problema 18.7...")
-                run_problema_18_7()
-                mensaje_info("Ejecutando Problema 18.8...")
-                run_problema_18_8(plot_evolution=plot_evolution)
+                run_problema_18_7(plot_evolution=plot_evolution)
                 mensaje_ok("Todos los problemas de la guía 18 completados.")
             except Exception as e:
                 print(f"[ERROR] Ocurrió un error general: {e}")

@@ -3,6 +3,7 @@ from gui.integration_view import IntegrationView
 from gui.systems_view import SystemsView
 from gui.roots_view import RootsView
 from gui.interpolation_view import InterpolationView
+from gui.problems18_view import Problems18View
 
 class MainWindow(ctk.CTk):
     def __init__(self):
@@ -47,6 +48,11 @@ class MainWindow(ctk.CTk):
             self.sidebar, text="Integración numérica", command=self.show_integration
         )
         self.btn_integration.grid(row=4, column=0, padx=20, pady=10, sticky="ew")
+
+        self.btn_problems18 = ctk.CTkButton(
+            self.sidebar, text="Guía Cap. 18", command=self.show_problems18
+        )
+        self.btn_problems18.grid(row=5, column=0, padx=20, pady=10, sticky="ew")
 
         self.btn_exit = ctk.CTkButton(
             self.sidebar, text="Salir", fg_color="#c0392b", hover_color="#a93226",
@@ -105,4 +111,9 @@ class MainWindow(ctk.CTk):
     def show_integration(self):
         self.clear_content()
         view = IntegrationView(self.content)
+        view.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
+
+    def show_problems18(self):
+        self.clear_content()
+        view = Problems18View(self.content)
         view.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
