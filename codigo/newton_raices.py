@@ -41,6 +41,15 @@ def newton(func, dfunc, x0, tol=1e-6, max_iter=150, plot_evolution=True, domain_
     x_old = x0
     y_old = func(x_old)
     
+    iterations = []
+    # Guardar aproximación inicial como iteración 0
+    iterations.append({
+        "iter": 0,
+        "x": float(x_old),
+        "fx": float(y_old),
+        "error": None
+    })
+
     # Imprimir el estado inicial (Iteración 0)
     print(f"{0:^10} | {x_old:^16.8f} | {y_old:^16.8e} | {'N/A':^20}")
     if plot_evolution:
@@ -77,6 +86,14 @@ def newton(func, dfunc, x0, tol=1e-6, max_iter=150, plot_evolution=True, domain_
                 
             ea_str = f"{ea:.8e}"
                 
+            # Guardar iteración en la lista para la GUI
+            iterations.append({
+                "iter": i,
+                "x": float(x_new),
+                "fx": float(y_new),
+                "error": float(ea)
+            })
+
             # Imprimir fila de la tabla
             print(f"{i:^10} | {x_new:^16.8f} | {y_new:^16.8e} | {ea_str:^20}")
             
@@ -110,6 +127,12 @@ def newton(func, dfunc, x0, tol=1e-6, max_iter=150, plot_evolution=True, domain_
         finalizar_grafico(fig, ax, raiz, func(raiz), f"Raíz: {raiz:.6f}\n{mensaje_fin}")
         
     return {
+        "success": abs(func(raiz)) <= tol,
+        "message": mensaje_fin,
+        "root": raiz,
+        "f_root": func(raiz),
+        "iterations": iterations,
+
         "raiz": raiz,
         "f_raiz": func(raiz),
         "iteraciones": iteraciones_totales,

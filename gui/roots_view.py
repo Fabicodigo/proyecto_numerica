@@ -20,7 +20,7 @@ class RootsView(ctk.CTkFrame):
         self.grid_rowconfigure(0, weight=1)
 
         # Panel izquierdo
-        self.left_panel = ctk.CTkFrame(self)
+        self.left_panel = ctk.CTkScrollableFrame(self)
         self.left_panel.grid(row=0, column=0, padx=(20, 10), pady=20, sticky="nsew")
         self.left_panel.grid_columnconfigure(0, weight=1)
 
@@ -29,7 +29,7 @@ class RootsView(ctk.CTkFrame):
         self.right_panel.grid(row=0, column=1, padx=(10, 20), pady=20, sticky="nsew")
         self.right_panel.grid_columnconfigure(0, weight=1)
         self.right_panel.grid_rowconfigure(1, weight=1)
-        self.right_panel.grid_rowconfigure(3, weight=1)
+        self.right_panel.grid_rowconfigure(4, weight=1)
 
         # ===== IZQUIERDA =====
         self.title_label = ctk.CTkLabel(
@@ -146,15 +146,47 @@ class RootsView(ctk.CTkFrame):
         self.canvas_widget.grid(row=1, column=0, padx=20, pady=(5, 15), sticky="nsew")
         self.canvas.draw()
 
+        # Controles de Animación/Simulación
+        self.controls_frame = ctk.CTkFrame(self.right_panel, fg_color="transparent")
+        self.controls_frame.grid(row=2, column=0, padx=20, pady=(0, 10), sticky="ew")
+        self.controls_frame.grid_columnconfigure((0, 1, 2), weight=1)
+
+        self.btn_prev = ctk.CTkButton(
+            self.controls_frame,
+            text="Atrás",
+            width=80,
+            command=self.anim_step_backward,
+            state="disabled"
+        )
+        self.btn_prev.grid(row=0, column=0, padx=5, sticky="ew")
+
+        self.btn_play = ctk.CTkButton(
+            self.controls_frame,
+            text="Reproducir",
+            width=100,
+            command=self.anim_play_pause,
+            state="disabled"
+        )
+        self.btn_play.grid(row=0, column=1, padx=5, sticky="ew")
+
+        self.btn_next = ctk.CTkButton(
+            self.controls_frame,
+            text="Adelante",
+            width=80,
+            command=self.anim_step_forward,
+            state="disabled"
+        )
+        self.btn_next.grid(row=0, column=2, padx=5, sticky="ew")
+
         self.table_title = ctk.CTkLabel(
             self.right_panel,
             text="Tabla de Iteraciones",
             font=ctk.CTkFont(size=22, weight="bold")
         )
-        self.table_title.grid(row=2, column=0, padx=20, pady=(5, 10), sticky="w")
+        self.table_title.grid(row=3, column=0, padx=20, pady=(5, 10), sticky="w")
 
         table_frame = ctk.CTkFrame(self.right_panel)
-        table_frame.grid(row=3, column=0, padx=20, pady=(0, 20), sticky="nsew")
+        table_frame.grid(row=4, column=0, padx=20, pady=(0, 20), sticky="nsew")
         table_frame.grid_rowconfigure(0, weight=1)
         table_frame.grid_columnconfigure(0, weight=1)
 
@@ -180,6 +212,7 @@ class RootsView(ctk.CTkFrame):
         self.tree.configure(yscroll=scrollbar.set)
         scrollbar.grid(row=0, column=1, sticky="ns")
 
+        self.animation_id = None
         self.update_fields("Bisección")
 
     def write_result(self, text):
@@ -268,50 +301,233 @@ class RootsView(ctk.CTkFrame):
 
             self.tree.insert("", "end", values=(iter_num, x, fx, error))
 
+    def start_animation(self, func, domain_min, domain_max, iterations, root, method):
+        if hasattr(self, "animation_id") and self.animation_id is not None:
+            self.after_cancel(self.animation_id)
+            self.animation_id = None
+
+        self.clear_table()
+
+        self.anim_func = func
+        self.anim_domain_min = domain_min
+        self.anim_domain_max = domain_max
+        self.anim_iterations = iterations
+        self.anim_root = root
+        self.anim_method = method
+
+        self.anim_current_idx = 0
+        self.anim_x_iters = []
+        self.anim_y_iters = []
+        self.anim_scatter_plot = None
+        self.anim_is_playing = False
+
+        xs = np.linspace(domain_min, domain_max, 400)
+        ys = func(xs)
+        self.ax.clear()
+        self.ax.plot(xs, ys, label="f(x)", linewidth=2, color="#1f77b4")
+        self.ax.axhline(0, color="gray", linewidth=1, linestyle="--")
+        self.ax.set_title(f"{method} - Evolución en tiempo real")
+        self.ax.set_xlabel("x")
+        self.ax.set_ylabel("f(x)")
+        self.ax.grid(True, alpha=0.3)
+        self.ax.legend()
+        self.canvas.draw()
+
+        self.btn_prev.configure(state="disabled")
+        self.btn_play.configure(state="normal", text="Pausar")
+        self.btn_next.configure(state="normal")
+
+        self.anim_is_playing = True
+        self.anim_step()
+
+    def anim_play_pause(self):
+        if not hasattr(self, "anim_iterations") or not self.anim_iterations:
+            return
+
+        if self.anim_is_playing:
+            self.anim_is_playing = False
+            self.btn_play.configure(text="Reproducir")
+            if self.animation_id is not None:
+                self.after_cancel(self.animation_id)
+                self.animation_id = None
+        else:
+            self.anim_is_playing = True
+            self.btn_play.configure(text="Pausar")
+            self.anim_step()
+
+    def anim_step(self):
+        if not self.anim_is_playing:
+            return
+
+        if self.anim_current_idx >= len(self.anim_iterations):
+            self.anim_is_playing = False
+            self.btn_play.configure(text="Reproducir", state="disabled")
+            self.btn_next.configure(state="disabled")
+            return
+
+        self.anim_step_forward()
+        self.animation_id = self.after(300, self.anim_step)
+
+    def anim_step_forward(self):
+        if not hasattr(self, "anim_iterations") or self.anim_current_idx >= len(self.anim_iterations):
+            return
+
+        it = self.anim_iterations[self.anim_current_idx]
+
+        iter_num = it.get("iter", "")
+        x_val = it.get("x", "")
+        fx_val = it.get("fx", "")
+        error_val = it.get("error", "")
+
+        x_str = f"{x_val:.6f}" if isinstance(x_val, (int, float)) else str(x_val)
+        fx_str = f"{fx_val:.6f}" if isinstance(fx_val, (int, float)) else str(fx_val)
+        err_str = f"{error_val:.6e}" if isinstance(error_val, (int, float)) else str(error_val)
+
+        self.tree.insert("", "end", values=(iter_num, x_str, fx_str, err_str))
+        self.tree.yview_moveto(1.0)
+
+        self.anim_x_iters.append(x_val)
+        self.anim_y_iters.append(fx_val)
+
+        if self.anim_scatter_plot is not None:
+            self.anim_scatter_plot.remove()
+
+        self.anim_scatter_plot = self.ax.scatter(self.anim_x_iters, self.anim_y_iters, color="#ff7f0e", s=45, label="Iterados", zorder=4)
+
+        self.anim_current_idx += 1
+
+        if self.anim_current_idx == len(self.anim_iterations):
+            if self.anim_root is not None:
+                try:
+                    y_root = self.anim_func(self.anim_root)
+                    self.ax.scatter([self.anim_root], [y_root], label=f"Raíz ({round(self.anim_root, 6)})", color="#d62728", s=80, zorder=5)
+                except Exception:
+                    pass
+            self.btn_play.configure(text="Reproducir", state="disabled")
+            self.btn_next.configure(state="disabled")
+
+        self.btn_prev.configure(state="normal")
+        self.ax.legend()
+        self.canvas.draw()
+
+    def anim_step_backward(self):
+        if not hasattr(self, "anim_iterations") or self.anim_current_idx <= 0:
+            return
+
+        if self.anim_is_playing:
+            self.anim_play_pause()
+
+        self.anim_current_idx -= 1
+        self.anim_x_iters.pop()
+        self.anim_y_iters.pop()
+
+        children = self.tree.get_children()
+        if children:
+            self.tree.delete(children[-1])
+
+        xs = np.linspace(self.anim_domain_min, self.anim_domain_max, 400)
+        ys = self.anim_func(xs)
+        self.ax.clear()
+        self.ax.plot(xs, ys, label="f(x)", linewidth=2, color="#1f77b4")
+        self.ax.axhline(0, color="gray", linewidth=1, linestyle="--")
+        self.ax.set_title(f"{self.anim_method} - Evolución en tiempo real")
+        self.ax.set_xlabel("x")
+        self.ax.set_ylabel("f(x)")
+        self.ax.grid(True, alpha=0.3)
+
+        if self.anim_x_iters:
+            self.anim_scatter_plot = self.ax.scatter(self.anim_x_iters, self.anim_y_iters, color="#ff7f0e", s=45, label="Iterados", zorder=4)
+        else:
+            self.anim_scatter_plot = None
+
+        self.ax.legend()
+        self.canvas.draw()
+
+        self.btn_next.configure(state="normal")
+        self.btn_play.configure(state="normal")
+
+        if self.anim_current_idx == 0:
+            self.btn_prev.configure(state="disabled")
+
     def calculate(self):
         try:
             method = self.method_option.get()
             expr = self.func_entry.get().strip()
 
             if expr == "":
-                self.write_result("Error: debe ingresar una función.")
+                self.write_result("Error: Debe ingresar una función f(x). Ejemplo: x**3 - x - 2")
                 return
 
-            func = construir_funcion(expr)
-            tol = float(self.tol_entry.get())
+            try:
+                func = construir_funcion(expr)
+            except Exception as e:
+                self.write_result(f"Error: La función ingresada no es válida.\n{e}")
+                return
 
-            domain_min = float(self.domain_min_entry.get())
-            domain_max = float(self.domain_max_entry.get())
+            try:
+                tol = float(self.tol_entry.get())
+            except ValueError:
+                self.write_result("Error: Ingrese valores numéricos válidos en todos los campos visibles.")
+                return
+
+            try:
+                domain_min = float(self.domain_min_entry.get())
+                domain_max = float(self.domain_max_entry.get())
+            except ValueError:
+                self.write_result("Error: Debe ingresar un dominio gráfico válido.")
+                return
 
             if domain_min >= domain_max:
-                self.write_result("Error: el dominio gráfico mínimo debe ser menor que el máximo.")
+                self.write_result("Error: El dominio gráfico mínimo debe ser menor que el máximo.")
                 return
 
             if method == "Bisección":
-                a = float(self.param1_entry.get())
-                b = float(self.param2_entry.get())
+                try:
+                    a = float(self.param1_entry.get())
+                    b = float(self.param2_entry.get())
+                except ValueError:
+                    self.write_result("Error: Ingrese valores numéricos válidos en todos los campos visibles.")
+                    return
 
-                result = biseccion(func, a, b, tol=tol, max_iter=150)
+                try:
+                    result = biseccion(func, a, b, tol=tol, max_iter=150, plot_evolution=False)
+                except ValueError as e:
+                    if "signos opuestos" in str(e) or "Bolzano" in str(e):
+                        self.write_result("Error: En Bisección, los extremos deben encerrar un cambio de signo.")
+                        return
+                    raise e
 
             elif method == "Newton":
                 d_expr = self.dfunc_entry.get().strip()
                 if d_expr == "":
-                    self.write_result("Error: en Newton debe ingresar la derivada f'(x).")
+                    self.write_result("Error: Newton requiere la derivada f'(x). Ejemplo: 3*x**2 - 1")
                     return
 
-                dfunc = construir_funcion(d_expr)
-                x0 = float(self.param1_entry.get())
+                try:
+                    dfunc = construir_funcion(d_expr)
+                except Exception as e:
+                    self.write_result(f"Error: La derivada ingresada no es válida.\n{e}")
+                    return
 
-                result = newton(func, dfunc, x0, tol=tol, max_iter=150)
+                try:
+                    x0 = float(self.param1_entry.get())
+                except ValueError:
+                    self.write_result("Error: Ingrese valores numéricos válidos en todos los campos visibles.")
+                    return
+
+                result = newton(func, dfunc, x0, tol=tol, max_iter=150, plot_evolution=False, domain_grafico=(domain_min, domain_max))
 
             elif method == "Secante":
-                x0 = float(self.param1_entry.get())
-                x1 = float(self.param2_entry.get())
+                try:
+                    x0 = float(self.param1_entry.get())
+                    x1 = float(self.param2_entry.get())
+                except ValueError:
+                    self.write_result("Error: Ingrese valores numéricos válidos en todos los campos visibles.")
+                    return
 
-                result = secante(func, x0, x1, tol=tol, max_iter=150)
+                result = secante(func, x0, x1, tol=tol, max_iter=150, plot_evolution=False, domain_grafico=(domain_min, domain_max))
 
-            self.fill_table(result["iterations"])
-            self.plot_method(func, domain_min, domain_max, result["iterations"], result.get("root"), method)
+            self.start_animation(func, domain_min, domain_max, result["iterations"], result.get("root"), method)
 
             summary = []
             summary.append(f"=== {method.upper()} ===\n")
@@ -340,6 +556,17 @@ class RootsView(ctk.CTkFrame):
             self.write_result(f"Error al calcular:\n{e}")
 
     def clear_fields(self):
+        if hasattr(self, "animation_id") and self.animation_id is not None:
+            self.after_cancel(self.animation_id)
+            self.animation_id = None
+
+        if hasattr(self, "anim_iterations"):
+            self.anim_iterations = []
+
+        self.btn_prev.configure(state="disabled")
+        self.btn_play.configure(state="disabled", text="Reproducir")
+        self.btn_next.configure(state="disabled")
+
         self.func_entry.delete(0, "end")
         self.dfunc_entry.delete(0, "end")
         self.param1_entry.delete(0, "end")

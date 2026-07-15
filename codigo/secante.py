@@ -40,6 +40,21 @@ def secante(func, x0, x1, tol=1e-6, max_iter=150, plot_evolution=True, domain_gr
     y0 = func(x0)
     y1 = func(x1)
     
+    iterations = []
+    # Guardar los dos valores iniciales
+    iterations.append({
+        "iter": 0,
+        "x": float(x0),
+        "fx": float(y0),
+        "error": None
+    })
+    iterations.append({
+        "iter": 1,
+        "x": float(x1),
+        "fx": float(y1),
+        "error": None
+    })
+
     # Imprimir los estados iniciales
     print(f"{0:^10} | {x0:^16.8f} | {y0:^16.8e} | {'N/A':^20}")
     if plot_evolution:
@@ -80,6 +95,14 @@ def secante(func, x0, x1, tol=1e-6, max_iter=150, plot_evolution=True, domain_gr
                 
             ea_str = f"{ea:.8e}"
                 
+            # Guardar iteración en la lista para la GUI
+            iterations.append({
+                "iter": i,
+                "x": float(x_new),
+                "fx": float(y_new),
+                "error": float(ea)
+            })
+
             # Imprimir fila de la tabla
             print(f"{i:^10} | {x_new:^16.8f} | {y_new:^16.8e} | {ea_str:^20}")
             
@@ -114,6 +137,12 @@ def secante(func, x0, x1, tol=1e-6, max_iter=150, plot_evolution=True, domain_gr
         finalizar_grafico(fig, ax, raiz, func(raiz), f"Raíz: {raiz:.6f}\n{mensaje_fin}")
         
     return {
+        "success": abs(func(raiz)) <= tol,
+        "message": mensaje_fin,
+        "root": raiz,
+        "f_root": func(raiz),
+        "iterations": iterations,
+
         "raiz": raiz,
         "f_raiz": func(raiz),
         "iteraciones": iteraciones_totales,

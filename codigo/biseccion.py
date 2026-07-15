@@ -33,6 +33,7 @@ def biseccion(func, a, b, tol=1e-6, max_iter=150, plot_evolution=True):
     raiz = None
     mensaje_fin = ""
     iteraciones_totales = 0
+    iterations = []
     
     for i in range(1, max_iter + 1):
         iteraciones_totales = i
@@ -50,6 +51,14 @@ def biseccion(func, a, b, tol=1e-6, max_iter=150, plot_evolution=True):
             ea = None
             ea_str = "N/A"
             
+        # Guardar iteración en la lista para la GUI
+        iterations.append({
+            "iter": i,
+            "x": float(x_new),
+            "fx": float(y_new),
+            "error": None if ea is None else float(ea)
+        })
+
         # Imprimir fila de la tabla
         print(f"{i:^10} | {x_new:^16.8f} | {y_new:^16.8e} | {ea_str:^20}")
         
@@ -90,6 +99,12 @@ def biseccion(func, a, b, tol=1e-6, max_iter=150, plot_evolution=True):
         finalizar_grafico(fig, ax, raiz, func(raiz), f"Raíz: {raiz:.6f}\n{mensaje_fin}")
         
     return {
+        "success": mensaje_fin != "Se alcanzó el máximo de iteraciones",
+        "message": mensaje_fin,
+        "root": raiz,
+        "f_root": func(raiz),
+        "iterations": iterations,
+
         "raiz": raiz,
         "f_raiz": func(raiz),
         "iteraciones": iteraciones_totales,
