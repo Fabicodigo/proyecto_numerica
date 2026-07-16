@@ -18,9 +18,10 @@ class IntegrationView(ctk.CTkFrame):
         self.grid_rowconfigure(0, weight=1)
 
         # Panel izquierdo
-        self.left_panel = ctk.CTkScrollableFrame(self)
+        self.left_panel = ctk.CTkFrame(self)
         self.left_panel.grid(row=0, column=0, padx=(20, 10), pady=20, sticky="nsew")
         self.left_panel.grid_columnconfigure(0, weight=1)
+        self.left_panel.grid_rowconfigure(4, weight=1)
 
         # Panel derecho
         self.right_panel = ctk.CTkFrame(self)
@@ -32,48 +33,54 @@ class IntegrationView(ctk.CTkFrame):
         self.title_label = ctk.CTkLabel(
             self.left_panel,
             text="Módulo de Integración Numérica",
-            font=ctk.CTkFont(size=26, weight="bold")
+            font=ctk.CTkFont(size=22, weight="bold")
         )
         self.title_label.grid(row=0, column=0, padx=20, pady=(20, 10), sticky="w")
 
-        self.method_label = ctk.CTkLabel(self.left_panel, text="Método:")
-        self.method_label.grid(row=1, column=0, padx=20, pady=(10, 0), sticky="w")
+        # Contenedor para inputs en 2 columnas
+        self.inputs_frame = ctk.CTkFrame(self.left_panel, fg_color="transparent")
+        self.inputs_frame.grid(row=1, column=0, padx=10, pady=5, sticky="ew")
+        self.inputs_frame.grid_columnconfigure(0, weight=1)
+        self.inputs_frame.grid_columnconfigure(1, weight=1)
+
+        self.method_label = ctk.CTkLabel(self.inputs_frame, text="Método:")
+        self.method_label.grid(row=0, column=0, padx=10, pady=(5, 0), sticky="w")
 
         self.method_option = ctk.CTkOptionMenu(
-            self.left_panel,
+            self.inputs_frame,
             values=["Trapecio", "Simpson"]
         )
-        self.method_option.grid(row=2, column=0, padx=20, pady=5, sticky="ew")
+        self.method_option.grid(row=1, column=0, padx=10, pady=2, sticky="ew")
 
-        self.func_label = ctk.CTkLabel(self.left_panel, text="Función f(x):")
-        self.func_label.grid(row=3, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.func_label = ctk.CTkLabel(self.inputs_frame, text="Función f(x):")
+        self.func_label.grid(row=0, column=1, padx=10, pady=(5, 0), sticky="w")
 
         self.func_entry = ctk.CTkEntry(
-            self.left_panel,
+            self.inputs_frame,
             placeholder_text="Ejemplo: x**2, sin(x), exp(x)"
         )
-        self.func_entry.grid(row=4, column=0, padx=20, pady=5, sticky="ew")
+        self.func_entry.grid(row=1, column=1, padx=10, pady=2, sticky="ew")
 
-        self.a_label = ctk.CTkLabel(self.left_panel, text="Límite inferior a:")
-        self.a_label.grid(row=5, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.a_label = ctk.CTkLabel(self.inputs_frame, text="Límite inferior a:")
+        self.a_label.grid(row=2, column=0, padx=10, pady=(5, 0), sticky="w")
 
-        self.a_entry = ctk.CTkEntry(self.left_panel, placeholder_text="Ejemplo: 0")
-        self.a_entry.grid(row=6, column=0, padx=20, pady=5, sticky="ew")
+        self.a_entry = ctk.CTkEntry(self.inputs_frame, placeholder_text="Ejemplo: 0")
+        self.a_entry.grid(row=3, column=0, padx=10, pady=2, sticky="ew")
 
-        self.b_label = ctk.CTkLabel(self.left_panel, text="Límite superior b:")
-        self.b_label.grid(row=7, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.b_label = ctk.CTkLabel(self.inputs_frame, text="Límite superior b:")
+        self.b_label.grid(row=2, column=1, padx=10, pady=(5, 0), sticky="w")
 
-        self.b_entry = ctk.CTkEntry(self.left_panel, placeholder_text="Ejemplo: 2")
-        self.b_entry.grid(row=8, column=0, padx=20, pady=5, sticky="ew")
+        self.b_entry = ctk.CTkEntry(self.inputs_frame, placeholder_text="Ejemplo: 2")
+        self.b_entry.grid(row=3, column=1, padx=10, pady=2, sticky="ew")
 
-        self.n_label = ctk.CTkLabel(self.left_panel, text="Número de segmentos n:")
-        self.n_label.grid(row=9, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.n_label = ctk.CTkLabel(self.inputs_frame, text="Número de segmentos n:")
+        self.n_label.grid(row=4, column=0, padx=10, pady=(5, 0), sticky="w")
 
-        self.n_entry = ctk.CTkEntry(self.left_panel, placeholder_text="Ejemplo: 4")
-        self.n_entry.grid(row=10, column=0, padx=20, pady=5, sticky="ew")
+        self.n_entry = ctk.CTkEntry(self.inputs_frame, placeholder_text="Ejemplo: 4")
+        self.n_entry.grid(row=5, column=0, padx=10, pady=2, sticky="ew")
 
         self.buttons_frame = ctk.CTkFrame(self.left_panel, fg_color="transparent")
-        self.buttons_frame.grid(row=11, column=0, padx=20, pady=15, sticky="ew")
+        self.buttons_frame.grid(row=2, column=0, padx=20, pady=10, sticky="ew")
         self.buttons_frame.grid_columnconfigure((0, 1), weight=1)
 
         self.calculate_button = ctk.CTkButton(
@@ -81,7 +88,7 @@ class IntegrationView(ctk.CTkFrame):
             text="Calcular",
             command=self.calculate
         )
-        self.calculate_button.grid(row=0, column=0, padx=(0, 10), sticky="ew")
+        self.calculate_button.grid(row=0, column=0, padx=(0, 5), sticky="ew")
 
         self.clear_button = ctk.CTkButton(
             self.buttons_frame,
@@ -90,16 +97,16 @@ class IntegrationView(ctk.CTkFrame):
             hover_color="gray30",
             command=self.clear_fields
         )
-        self.clear_button.grid(row=0, column=1, padx=(10, 0), sticky="ew")
+        self.clear_button.grid(row=0, column=1, padx=(5, 0), sticky="ew")
 
         self.result_label = ctk.CTkLabel(self.left_panel, text="Resultados:")
-        self.result_label.grid(row=12, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.result_label.grid(row=3, column=0, padx=20, pady=(5, 0), sticky="w")
 
         self.result_box = ctk.CTkTextbox(
-            self.left_panel, height=520, wrap="word",
+            self.left_panel, height=200, wrap="word",
             font=ctk.CTkFont(family="Consolas", size=13)
         )
-        self.result_box.grid(row=13, column=0, padx=20, pady=(5, 20), sticky="nsew")
+        self.result_box.grid(row=4, column=0, padx=20, pady=(5, 20), sticky="nsew")
         self.result_box.insert("1.0", "Aquí aparecerán los resultados...\n")
         self.result_box.configure(state="disabled")
 

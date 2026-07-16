@@ -15,9 +15,10 @@ class SystemsView(ctk.CTkFrame):
         self.grid_rowconfigure(0, weight=1)
 
         # Panel izquierdo
-        self.left_panel = ctk.CTkScrollableFrame(self)
+        self.left_panel = ctk.CTkFrame(self)
         self.left_panel.grid(row=0, column=0, padx=(20, 10), pady=20, sticky="nsew")
         self.left_panel.grid_columnconfigure(0, weight=1)
+        self.left_panel.grid_rowconfigure(4, weight=1)
 
         # Panel derecho
         self.right_panel = ctk.CTkFrame(self)
@@ -30,49 +31,55 @@ class SystemsView(ctk.CTkFrame):
         self.title_label = ctk.CTkLabel(
             self.left_panel,
             text="Módulo de Sistemas Lineales",
-            font=ctk.CTkFont(size=26, weight="bold")
+            font=ctk.CTkFont(size=22, weight="bold")
         )
         self.title_label.grid(row=0, column=0, padx=20, pady=(20, 10), sticky="w")
 
-        self.method_label = ctk.CTkLabel(self.left_panel, text="Método:")
-        self.method_label.grid(row=1, column=0, padx=20, pady=(10, 0), sticky="w")
+        # Contenedor para inputs en 2 columnas
+        self.inputs_frame = ctk.CTkFrame(self.left_panel, fg_color="transparent")
+        self.inputs_frame.grid(row=1, column=0, padx=10, pady=5, sticky="ew")
+        self.inputs_frame.grid_columnconfigure(0, weight=1)
+        self.inputs_frame.grid_columnconfigure(1, weight=1)
+
+        self.method_label = ctk.CTkLabel(self.inputs_frame, text="Método:")
+        self.method_label.grid(row=0, column=0, padx=10, pady=(5, 0), sticky="w")
 
         self.method_option = ctk.CTkOptionMenu(
-            self.left_panel,
+            self.inputs_frame,
             values=["Gauss con pivoteo parcial", "Gauss-Seidel"],
             command=self.update_fields
         )
-        self.method_option.grid(row=2, column=0, padx=20, pady=5, sticky="ew")
+        self.method_option.grid(row=1, column=0, padx=10, pady=2, sticky="ew")
 
-        self.matrix_label = ctk.CTkLabel(self.left_panel, text="Matriz A (una fila por línea, valores separados por espacios):")
-        self.matrix_label.grid(row=3, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.vector_label = ctk.CTkLabel(self.inputs_frame, text="Vector b (valores con espacios):")
+        self.vector_label.grid(row=0, column=1, padx=10, pady=(5, 0), sticky="w")
 
-        self.matrix_box = ctk.CTkTextbox(self.left_panel, height=120)
-        self.matrix_box.grid(row=4, column=0, padx=20, pady=5, sticky="ew")
-        self.matrix_box.insert("1.0", "4 1\n2 3")
-
-        self.vector_label = ctk.CTkLabel(self.left_panel, text="Vector b (valores separados por espacios):")
-        self.vector_label.grid(row=5, column=0, padx=20, pady=(10, 0), sticky="w")
-
-        self.vector_entry = ctk.CTkEntry(self.left_panel, placeholder_text="Ejemplo: 1 2")
-        self.vector_entry.grid(row=6, column=0, padx=20, pady=5, sticky="ew")
+        self.vector_entry = ctk.CTkEntry(self.inputs_frame, placeholder_text="Ejemplo: 1 2")
+        self.vector_entry.grid(row=1, column=1, padx=10, pady=2, sticky="ew")
         self.vector_entry.insert(0, "1 2")
 
-        self.x0_label = ctk.CTkLabel(self.left_panel, text="Vector inicial x0 (solo para Gauss-Seidel):")
-        self.x0_label.grid(row=7, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.x0_label = ctk.CTkLabel(self.inputs_frame, text="Vector inicial x0 (Gauss-Seidel):")
+        self.x0_label.grid(row=2, column=0, padx=10, pady=(5, 0), sticky="w")
 
-        self.x0_entry = ctk.CTkEntry(self.left_panel, placeholder_text="Ejemplo: 0 0")
-        self.x0_entry.grid(row=8, column=0, padx=20, pady=5, sticky="ew")
+        self.x0_entry = ctk.CTkEntry(self.inputs_frame, placeholder_text="Ejemplo: 0 0")
+        self.x0_entry.grid(row=3, column=0, padx=10, pady=2, sticky="ew")
 
-        self.tol_label = ctk.CTkLabel(self.left_panel, text="Tolerancia (solo para Gauss-Seidel):")
-        self.tol_label.grid(row=9, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.tol_label = ctk.CTkLabel(self.inputs_frame, text="Tolerancia (Gauss-Seidel):")
+        self.tol_label.grid(row=2, column=1, padx=10, pady=(5, 0), sticky="w")
 
-        self.tol_entry = ctk.CTkEntry(self.left_panel, placeholder_text="Ejemplo: 1e-6")
-        self.tol_entry.grid(row=10, column=0, padx=20, pady=5, sticky="ew")
+        self.tol_entry = ctk.CTkEntry(self.inputs_frame, placeholder_text="Ejemplo: 1e-6")
+        self.tol_entry.grid(row=3, column=1, padx=10, pady=2, sticky="ew")
         self.tol_entry.insert(0, "1e-6")
 
+        self.matrix_label = ctk.CTkLabel(self.inputs_frame, text="Matriz A (una fila por línea, valores con espacios):")
+        self.matrix_label.grid(row=4, column=0, columnspan=2, padx=10, pady=(5, 0), sticky="w")
+
+        self.matrix_box = ctk.CTkTextbox(self.inputs_frame, height=80)
+        self.matrix_box.grid(row=5, column=0, columnspan=2, padx=10, pady=2, sticky="ew")
+        self.matrix_box.insert("1.0", "4 1\n2 3")
+
         self.buttons_frame = ctk.CTkFrame(self.left_panel, fg_color="transparent")
-        self.buttons_frame.grid(row=11, column=0, padx=20, pady=15, sticky="ew")
+        self.buttons_frame.grid(row=2, column=0, padx=20, pady=10, sticky="ew")
         self.buttons_frame.grid_columnconfigure((0, 1), weight=1)
 
         self.calculate_button = ctk.CTkButton(
@@ -80,7 +87,7 @@ class SystemsView(ctk.CTkFrame):
             text="Calcular",
             command=self.calculate
         )
-        self.calculate_button.grid(row=0, column=0, padx=(0, 10), sticky="ew")
+        self.calculate_button.grid(row=0, column=0, padx=(0, 5), sticky="ew")
 
         self.clear_button = ctk.CTkButton(
             self.buttons_frame,
@@ -89,16 +96,16 @@ class SystemsView(ctk.CTkFrame):
             hover_color="gray30",
             command=self.clear_fields
         )
-        self.clear_button.grid(row=0, column=1, padx=(10, 0), sticky="ew")
+        self.clear_button.grid(row=0, column=1, padx=(5, 0), sticky="ew")
 
         self.result_label = ctk.CTkLabel(self.left_panel, text="Resumen:")
-        self.result_label.grid(row=12, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.result_label.grid(row=3, column=0, padx=20, pady=(5, 0), sticky="w")
 
         self.result_box = ctk.CTkTextbox(
-            self.left_panel, height=520, wrap="word",
+            self.left_panel, height=200, wrap="word",
             font=ctk.CTkFont(family="Consolas", size=13)
         )
-        self.result_box.grid(row=13, column=0, padx=20, pady=(5, 20), sticky="nsew")
+        self.result_box.grid(row=4, column=0, padx=20, pady=(5, 20), sticky="nsew")
         self.result_box.insert("1.0", "Aquí aparecerá el resumen del método.\n")
         self.result_box.configure(state="disabled")
 

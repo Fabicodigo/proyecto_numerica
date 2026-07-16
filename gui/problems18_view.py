@@ -137,9 +137,11 @@ class Problems18View(ctk.CTkFrame):
         self.grid_rowconfigure(0, weight=1)
 
         # Panel izquierdo
-        self.left_panel = ctk.CTkScrollableFrame(self)
+        self.left_panel = ctk.CTkFrame(self)
         self.left_panel.grid(row=0, column=0, padx=(20, 10), pady=20, sticky="nsew")
         self.left_panel.grid_columnconfigure(0, weight=1)
+        self.left_panel.grid_rowconfigure(4, weight=1)
+        self.left_panel.grid_rowconfigure(7, weight=1)
 
         # Panel derecho
         self.right_panel = ctk.CTkFrame(self)
@@ -152,32 +154,38 @@ class Problems18View(ctk.CTkFrame):
         self.title_label = ctk.CTkLabel(
             self.left_panel,
             text="Guía de Problemas — Cap. 18",
-            font=ctk.CTkFont(size=26, weight="bold")
+            font=ctk.CTkFont(size=22, weight="bold")
         )
         self.title_label.grid(row=0, column=0, padx=20, pady=(20, 10), sticky="w")
 
-        self.problem_label = ctk.CTkLabel(self.left_panel, text="Problema:")
-        self.problem_label.grid(row=1, column=0, padx=20, pady=(10, 0), sticky="w")
+        # Contenedor para la opción del problema
+        self.inputs_frame = ctk.CTkFrame(self.left_panel, fg_color="transparent")
+        self.inputs_frame.grid(row=1, column=0, padx=10, pady=5, sticky="ew")
+        self.inputs_frame.grid_columnconfigure(0, weight=1)
+        self.inputs_frame.grid_columnconfigure(1, weight=1)
+
+        self.problem_label = ctk.CTkLabel(self.inputs_frame, text="Problema:")
+        self.problem_label.grid(row=0, column=0, padx=10, pady=(5, 0), sticky="w")
 
         self.problem_option = ctk.CTkOptionMenu(
-            self.left_panel,
+            self.inputs_frame,
             values=[P185, P186, P187],
             command=self.update_enunciado
         )
-        self.problem_option.grid(row=2, column=0, padx=20, pady=5, sticky="ew")
+        self.problem_option.grid(row=1, column=0, padx=10, pady=2, sticky="ew")
 
         self.enunciado_label = ctk.CTkLabel(self.left_panel, text="Enunciado y explicación:")
-        self.enunciado_label.grid(row=3, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.enunciado_label.grid(row=3, column=0, padx=20, pady=(5, 0), sticky="w")
 
         self.enunciado_box = ctk.CTkTextbox(
-            self.left_panel, height=280, wrap="word",
+            self.left_panel, height=120, wrap="word",
             font=ctk.CTkFont(family="Consolas", size=13)
         )
         self.enunciado_box.grid(row=4, column=0, padx=20, pady=(5, 10), sticky="nsew")
         self.enunciado_box.configure(state="disabled")
 
         self.buttons_frame = ctk.CTkFrame(self.left_panel, fg_color="transparent")
-        self.buttons_frame.grid(row=5, column=0, padx=20, pady=15, sticky="ew")
+        self.buttons_frame.grid(row=5, column=0, padx=20, pady=10, sticky="ew")
         self.buttons_frame.grid_columnconfigure((0, 1), weight=1)
 
         self.solve_button = ctk.CTkButton(
@@ -185,7 +193,7 @@ class Problems18View(ctk.CTkFrame):
             text="Resolver",
             command=self.solve
         )
-        self.solve_button.grid(row=0, column=0, padx=(0, 10), sticky="ew")
+        self.solve_button.grid(row=0, column=0, padx=(0, 5), sticky="ew")
 
         self.clear_button = ctk.CTkButton(
             self.buttons_frame,
@@ -194,13 +202,13 @@ class Problems18View(ctk.CTkFrame):
             hover_color="gray30",
             command=self.clear_fields
         )
-        self.clear_button.grid(row=0, column=1, padx=(10, 0), sticky="ew")
+        self.clear_button.grid(row=0, column=1, padx=(5, 0), sticky="ew")
 
         self.result_label = ctk.CTkLabel(self.left_panel, text="Resultados e interpretación:")
-        self.result_label.grid(row=6, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.result_label.grid(row=6, column=0, padx=20, pady=(5, 0), sticky="w")
 
         self.result_box = ctk.CTkTextbox(
-            self.left_panel, height=520, wrap="word",
+            self.left_panel, height=180, wrap="word",
             font=ctk.CTkFont(family="Consolas", size=13)
         )
         self.result_box.grid(row=7, column=0, padx=20, pady=(5, 20), sticky="nsew")
