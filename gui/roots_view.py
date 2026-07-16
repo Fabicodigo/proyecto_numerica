@@ -118,8 +118,21 @@ class RootsView(ctk.CTkFrame):
         )
         self.clear_button.grid(row=0, column=1, padx=(10, 0), sticky="ew")
 
-        self.result_label = ctk.CTkLabel(self.left_panel, text="Resumen:")
-        self.result_label.grid(row=18, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.result_header = ctk.CTkFrame(self.left_panel, fg_color="transparent")
+        self.result_header.grid(row=18, column=0, padx=20, pady=(10, 0), sticky="ew")
+        self.result_header.grid_columnconfigure(0, weight=1)
+
+        self.result_label = ctk.CTkLabel(self.result_header, text="Resumen:")
+        self.result_label.grid(row=0, column=0, sticky="w")
+
+        self.expand_button = ctk.CTkButton(
+            self.result_header,
+            text="Ampliar",
+            width=70,
+            height=20,
+            command=self.expand_results
+        )
+        self.expand_button.grid(row=0, column=1, sticky="e")
 
         self.result_box = ctk.CTkTextbox(
             self.left_panel, height=520, wrap="word",
@@ -648,3 +661,31 @@ class RootsView(ctk.CTkFrame):
         self.ax.set_ylabel("f(x)")
         self.ax.grid(True, alpha=0.3)
         self.canvas.draw()
+
+    def expand_results(self):
+        content = self.result_box.get("1.0", "end-1c")
+        
+        popup = ctk.CTkToplevel(self)
+        popup.title("Resumen Ampliado")
+        popup.geometry("800x600")
+        
+        popup.update_idletasks()
+        width = 800
+        height = 600
+        x = (popup.winfo_screenwidth() // 2) - (width // 2)
+        y = (popup.winfo_screenheight() // 2) - (height // 2)
+        popup.geometry(f"{width}x{height}+{x}+{y}")
+        
+        popup.grid_columnconfigure(0, weight=1)
+        popup.grid_rowconfigure(0, weight=1)
+        
+        popup.transient(self.winfo_toplevel())
+        popup.grab_set()
+        
+        textbox = ctk.CTkTextbox(popup, font=ctk.CTkFont(family="Consolas", size=13), wrap="word")
+        textbox.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+        textbox.insert("1.0", content)
+        textbox.configure(state="disabled")
+        
+        close_btn = ctk.CTkButton(popup, text="Cerrar", command=popup.destroy)
+        close_btn.grid(row=1, column=0, padx=20, pady=(0, 20))
