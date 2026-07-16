@@ -17,9 +17,10 @@ class InterpolationView(ctk.CTkFrame):
         self.grid_rowconfigure(0, weight=1)
 
         # Panel izquierdo
-        self.left_panel = ctk.CTkScrollableFrame(self)
+        self.left_panel = ctk.CTkFrame(self)
         self.left_panel.grid(row=0, column=0, padx=(20, 10), pady=20, sticky="nsew")
         self.left_panel.grid_columnconfigure(0, weight=1)
+        self.left_panel.grid_rowconfigure(4, weight=1)
 
         # Panel derecho
         self.right_panel = ctk.CTkFrame(self)
@@ -31,39 +32,45 @@ class InterpolationView(ctk.CTkFrame):
         self.title_label = ctk.CTkLabel(
             self.left_panel,
             text="Módulo de Interpolación",
-            font=ctk.CTkFont(size=26, weight="bold")
+            font=ctk.CTkFont(size=22, weight="bold")
         )
         self.title_label.grid(row=0, column=0, padx=20, pady=(20, 10), sticky="w")
 
-        self.method_label = ctk.CTkLabel(self.left_panel, text="Método:")
-        self.method_label.grid(row=1, column=0, padx=20, pady=(10, 0), sticky="w")
+        # Contenedor para inputs en 2 columnas
+        self.inputs_frame = ctk.CTkFrame(self.left_panel, fg_color="transparent")
+        self.inputs_frame.grid(row=1, column=0, padx=10, pady=5, sticky="ew")
+        self.inputs_frame.grid_columnconfigure(0, weight=1)
+        self.inputs_frame.grid_columnconfigure(1, weight=1)
+
+        self.method_label = ctk.CTkLabel(self.inputs_frame, text="Método:")
+        self.method_label.grid(row=0, column=0, padx=10, pady=(5, 0), sticky="w")
 
         self.method_option = ctk.CTkOptionMenu(
-            self.left_panel,
+            self.inputs_frame,
             values=["Newton", "Lagrange"]
         )
-        self.method_option.grid(row=2, column=0, padx=20, pady=5, sticky="ew")
+        self.method_option.grid(row=1, column=0, padx=10, pady=2, sticky="ew")
 
-        self.x_label = ctk.CTkLabel(self.left_panel, text="Valores de x (separados por espacios):")
-        self.x_label.grid(row=3, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.xi_label = ctk.CTkLabel(self.inputs_frame, text="Valor xi a interpolar:")
+        self.xi_label.grid(row=0, column=1, padx=10, pady=(5, 0), sticky="w")
 
-        self.x_entry = ctk.CTkEntry(self.left_panel, placeholder_text="Ejemplo: 1 2 3")
-        self.x_entry.grid(row=4, column=0, padx=20, pady=5, sticky="ew")
+        self.xi_entry = ctk.CTkEntry(self.inputs_frame, placeholder_text="Ejemplo: 2.5")
+        self.xi_entry.grid(row=1, column=1, padx=10, pady=2, sticky="ew")
 
-        self.y_label = ctk.CTkLabel(self.left_panel, text="Valores de y (separados por espacios):")
-        self.y_label.grid(row=5, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.x_label = ctk.CTkLabel(self.inputs_frame, text="Valores de x (separados por espacios):")
+        self.x_label.grid(row=2, column=0, columnspan=2, padx=10, pady=(5, 0), sticky="w")
 
-        self.y_entry = ctk.CTkEntry(self.left_panel, placeholder_text="Ejemplo: 1 4 9")
-        self.y_entry.grid(row=6, column=0, padx=20, pady=5, sticky="ew")
+        self.x_entry = ctk.CTkEntry(self.inputs_frame, placeholder_text="Ejemplo: 1 2 3")
+        self.x_entry.grid(row=3, column=0, columnspan=2, padx=10, pady=2, sticky="ew")
 
-        self.xi_label = ctk.CTkLabel(self.left_panel, text="Valor xi a interpolar:")
-        self.xi_label.grid(row=7, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.y_label = ctk.CTkLabel(self.inputs_frame, text="Valores de y (separados por espacios):")
+        self.y_label.grid(row=4, column=0, columnspan=2, padx=10, pady=(5, 0), sticky="w")
 
-        self.xi_entry = ctk.CTkEntry(self.left_panel, placeholder_text="Ejemplo: 2.5")
-        self.xi_entry.grid(row=8, column=0, padx=20, pady=5, sticky="ew")
+        self.y_entry = ctk.CTkEntry(self.inputs_frame, placeholder_text="Ejemplo: 1 4 9")
+        self.y_entry.grid(row=5, column=0, columnspan=2, padx=10, pady=2, sticky="ew")
 
         self.buttons_frame = ctk.CTkFrame(self.left_panel, fg_color="transparent")
-        self.buttons_frame.grid(row=9, column=0, padx=20, pady=15, sticky="ew")
+        self.buttons_frame.grid(row=2, column=0, padx=20, pady=10, sticky="ew")
         self.buttons_frame.grid_columnconfigure((0, 1), weight=1)
 
         self.calculate_button = ctk.CTkButton(
@@ -71,7 +78,7 @@ class InterpolationView(ctk.CTkFrame):
             text="Calcular",
             command=self.calculate
         )
-        self.calculate_button.grid(row=0, column=0, padx=(0, 10), sticky="ew")
+        self.calculate_button.grid(row=0, column=0, padx=(0, 5), sticky="ew")
 
         self.clear_button = ctk.CTkButton(
             self.buttons_frame,
@@ -80,10 +87,10 @@ class InterpolationView(ctk.CTkFrame):
             hover_color="gray30",
             command=self.clear_fields
         )
-        self.clear_button.grid(row=0, column=1, padx=(10, 0), sticky="ew")
+        self.clear_button.grid(row=0, column=1, padx=(5, 0), sticky="ew")
 
         self.result_header = ctk.CTkFrame(self.left_panel, fg_color="transparent")
-        self.result_header.grid(row=10, column=0, padx=20, pady=(10, 0), sticky="ew")
+        self.result_header.grid(row=3, column=0, padx=20, pady=(5, 0), sticky="ew")
         self.result_header.grid_columnconfigure(0, weight=1)
 
         self.result_label = ctk.CTkLabel(self.result_header, text="Resultados:")
@@ -99,10 +106,10 @@ class InterpolationView(ctk.CTkFrame):
         self.expand_button.grid(row=0, column=1, sticky="e")
 
         self.result_box = ctk.CTkTextbox(
-            self.left_panel, height=520, wrap="word",
+            self.left_panel, height=200, wrap="word",
             font=ctk.CTkFont(family="Consolas", size=13)
         )
-        self.result_box.grid(row=11, column=0, padx=20, pady=(5, 20), sticky="nsew")
+        self.result_box.grid(row=4, column=0, padx=20, pady=(5, 20), sticky="nsew")
         self.result_box.insert("1.0", "Aquí aparecerán los resultados...\n")
         self.result_box.configure(state="disabled")
 

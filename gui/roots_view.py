@@ -20,9 +20,10 @@ class RootsView(ctk.CTkFrame):
         self.grid_rowconfigure(0, weight=1)
 
         # Panel izquierdo
-        self.left_panel = ctk.CTkScrollableFrame(self)
+        self.left_panel = ctk.CTkFrame(self)
         self.left_panel.grid(row=0, column=0, padx=(20, 10), pady=20, sticky="nsew")
         self.left_panel.grid_columnconfigure(0, weight=1)
+        self.left_panel.grid_rowconfigure(4, weight=1)
 
         # Panel derecho
         self.right_panel = ctk.CTkFrame(self)
@@ -35,71 +36,77 @@ class RootsView(ctk.CTkFrame):
         self.title_label = ctk.CTkLabel(
             self.left_panel,
             text="Módulo de Métodos de Raíces",
-            font=ctk.CTkFont(size=26, weight="bold")
+            font=ctk.CTkFont(size=22, weight="bold")
         )
         self.title_label.grid(row=0, column=0, padx=20, pady=(20, 10), sticky="w")
 
-        self.method_label = ctk.CTkLabel(self.left_panel, text="Método:")
-        self.method_label.grid(row=1, column=0, padx=20, pady=(10, 0), sticky="w")
+        # Contenedor para inputs en 2 columnas
+        self.inputs_frame = ctk.CTkFrame(self.left_panel, fg_color="transparent")
+        self.inputs_frame.grid(row=1, column=0, padx=10, pady=5, sticky="ew")
+        self.inputs_frame.grid_columnconfigure(0, weight=1)
+        self.inputs_frame.grid_columnconfigure(1, weight=1)
+
+        self.method_label = ctk.CTkLabel(self.inputs_frame, text="Método:")
+        self.method_label.grid(row=0, column=0, padx=10, pady=(5, 0), sticky="w")
 
         self.method_option = ctk.CTkOptionMenu(
-            self.left_panel,
+            self.inputs_frame,
             values=["Bisección", "Newton", "Secante"],
             command=self.update_fields
         )
-        self.method_option.grid(row=2, column=0, padx=20, pady=5, sticky="ew")
+        self.method_option.grid(row=1, column=0, padx=10, pady=2, sticky="ew")
 
-        self.func_label = ctk.CTkLabel(self.left_panel, text="Función f(x):")
-        self.func_label.grid(row=3, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.func_label = ctk.CTkLabel(self.inputs_frame, text="Función f(x):")
+        self.func_label.grid(row=0, column=1, padx=10, pady=(5, 0), sticky="w")
 
         self.func_entry = ctk.CTkEntry(
-            self.left_panel,
+            self.inputs_frame,
             placeholder_text="Ejemplo: x**3 - x - 1"
         )
-        self.func_entry.grid(row=4, column=0, padx=20, pady=5, sticky="ew")
+        self.func_entry.grid(row=1, column=1, padx=10, pady=2, sticky="ew")
 
-        self.dfunc_label = ctk.CTkLabel(self.left_panel, text="Derivada f'(x):")
-        self.dfunc_label.grid(row=5, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.dfunc_label = ctk.CTkLabel(self.inputs_frame, text="Derivada f'(x):")
+        self.dfunc_label.grid(row=6, column=1, padx=10, pady=(5, 0), sticky="w")
 
         self.dfunc_entry = ctk.CTkEntry(
-            self.left_panel,
+            self.inputs_frame,
             placeholder_text="Solo para Newton. Ejemplo: 3*x**2 - 1"
         )
-        self.dfunc_entry.grid(row=6, column=0, padx=20, pady=5, sticky="ew")
+        self.dfunc_entry.grid(row=7, column=1, padx=10, pady=2, sticky="ew")
 
-        self.param1_label = ctk.CTkLabel(self.left_panel, text="Parámetro 1:")
-        self.param1_label.grid(row=7, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.param1_label = ctk.CTkLabel(self.inputs_frame, text="Parámetro 1:")
+        self.param1_label.grid(row=2, column=0, padx=10, pady=(5, 0), sticky="w")
 
-        self.param1_entry = ctk.CTkEntry(self.left_panel)
-        self.param1_entry.grid(row=8, column=0, padx=20, pady=5, sticky="ew")
+        self.param1_entry = ctk.CTkEntry(self.inputs_frame)
+        self.param1_entry.grid(row=3, column=0, padx=10, pady=2, sticky="ew")
 
-        self.param2_label = ctk.CTkLabel(self.left_panel, text="Parámetro 2:")
-        self.param2_label.grid(row=9, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.param2_label = ctk.CTkLabel(self.inputs_frame, text="Parámetro 2:")
+        self.param2_label.grid(row=2, column=1, padx=10, pady=(5, 0), sticky="w")
 
-        self.param2_entry = ctk.CTkEntry(self.left_panel)
-        self.param2_entry.grid(row=10, column=0, padx=20, pady=5, sticky="ew")
+        self.param2_entry = ctk.CTkEntry(self.inputs_frame)
+        self.param2_entry.grid(row=3, column=1, padx=10, pady=2, sticky="ew")
 
-        self.domain_min_label = ctk.CTkLabel(self.left_panel, text="Dominio gráfico mínimo:")
-        self.domain_min_label.grid(row=11, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.domain_min_label = ctk.CTkLabel(self.inputs_frame, text="Dominio gráfico mínimo:")
+        self.domain_min_label.grid(row=4, column=0, padx=10, pady=(5, 0), sticky="w")
 
-        self.domain_min_entry = ctk.CTkEntry(self.left_panel, placeholder_text="Ejemplo: -5")
-        self.domain_min_entry.grid(row=12, column=0, padx=20, pady=5, sticky="ew")
+        self.domain_min_entry = ctk.CTkEntry(self.inputs_frame, placeholder_text="Ejemplo: -5")
+        self.domain_min_entry.grid(row=5, column=0, padx=10, pady=2, sticky="ew")
 
-        self.domain_max_label = ctk.CTkLabel(self.left_panel, text="Dominio gráfico máximo:")
-        self.domain_max_label.grid(row=13, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.domain_max_label = ctk.CTkLabel(self.inputs_frame, text="Dominio gráfico máximo:")
+        self.domain_max_label.grid(row=4, column=1, padx=10, pady=(5, 0), sticky="w")
 
-        self.domain_max_entry = ctk.CTkEntry(self.left_panel, placeholder_text="Ejemplo: 5")
-        self.domain_max_entry.grid(row=14, column=0, padx=20, pady=5, sticky="ew")
+        self.domain_max_entry = ctk.CTkEntry(self.inputs_frame, placeholder_text="Ejemplo: 5")
+        self.domain_max_entry.grid(row=5, column=1, padx=10, pady=2, sticky="ew")
 
-        self.tol_label = ctk.CTkLabel(self.left_panel, text="Tolerancia:")
-        self.tol_label.grid(row=15, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.tol_label = ctk.CTkLabel(self.inputs_frame, text="Tolerancia:")
+        self.tol_label.grid(row=6, column=0, padx=10, pady=(5, 0), sticky="w")
 
-        self.tol_entry = ctk.CTkEntry(self.left_panel, placeholder_text="Ejemplo: 1e-6")
-        self.tol_entry.grid(row=16, column=0, padx=20, pady=5, sticky="ew")
+        self.tol_entry = ctk.CTkEntry(self.inputs_frame, placeholder_text="Ejemplo: 1e-6")
+        self.tol_entry.grid(row=7, column=0, padx=10, pady=2, sticky="ew")
         self.tol_entry.insert(0, "1e-6")
 
         self.buttons_frame = ctk.CTkFrame(self.left_panel, fg_color="transparent")
-        self.buttons_frame.grid(row=17, column=0, padx=20, pady=15, sticky="ew")
+        self.buttons_frame.grid(row=2, column=0, padx=20, pady=10, sticky="ew")
         self.buttons_frame.grid_columnconfigure((0, 1), weight=1)
 
         self.calculate_button = ctk.CTkButton(
@@ -107,7 +114,7 @@ class RootsView(ctk.CTkFrame):
             text="Calcular",
             command=self.calculate
         )
-        self.calculate_button.grid(row=0, column=0, padx=(0, 10), sticky="ew")
+        self.calculate_button.grid(row=0, column=0, padx=(0, 5), sticky="ew")
 
         self.clear_button = ctk.CTkButton(
             self.buttons_frame,
@@ -116,10 +123,10 @@ class RootsView(ctk.CTkFrame):
             hover_color="gray30",
             command=self.clear_fields
         )
-        self.clear_button.grid(row=0, column=1, padx=(10, 0), sticky="ew")
+        self.clear_button.grid(row=0, column=1, padx=(5, 0), sticky="ew")
 
         self.result_header = ctk.CTkFrame(self.left_panel, fg_color="transparent")
-        self.result_header.grid(row=18, column=0, padx=20, pady=(10, 0), sticky="ew")
+        self.result_header.grid(row=3, column=0, padx=20, pady=(5, 0), sticky="ew")
         self.result_header.grid_columnconfigure(0, weight=1)
 
         self.result_label = ctk.CTkLabel(self.result_header, text="Resumen:")
@@ -135,10 +142,10 @@ class RootsView(ctk.CTkFrame):
         self.expand_button.grid(row=0, column=1, sticky="e")
 
         self.result_box = ctk.CTkTextbox(
-            self.left_panel, height=520, wrap="word",
+            self.left_panel, height=200, wrap="word",
             font=ctk.CTkFont(family="Consolas", size=13)
         )
-        self.result_box.grid(row=19, column=0, padx=20, pady=(5, 20), sticky="nsew")
+        self.result_box.grid(row=4, column=0, padx=20, pady=(5, 20), sticky="nsew")
         self.result_box.insert("1.0", "Aquí aparecerá el resumen del método.\n")
         self.result_box.configure(state="disabled")
 

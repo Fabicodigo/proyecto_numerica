@@ -26,7 +26,6 @@ from core.parser import construir_funcion
 from codigo.biseccion import biseccion
 from codigo.newton_raices import newton
 from codigo.secante import secante
-from codigo.ejercicios import menu_ejercicios_predefinidos
 from codigo.problemas_seccion_18 import menu_guia_18
 from codigo.gauss_pivoteo import gauss_pivoteo_parcial
 from codigo.gauss_seidel import gauss_seidel
@@ -64,10 +63,9 @@ def menu_raices():
         print("1. Bisección (Manual)")
         print("2. Newton (Manual)")
         print("3. Secante (Manual)")
-        print("4. Resolver Ejercicios Propuestos (Ej 6, Ej 7, Abrevadero)")
         print("0. Volver")
 
-        opcion = pedir_opcion("\nSeleccione una opción: ", ["1", "2", "3", "4", "0"])
+        opcion = pedir_opcion("\nSeleccione una opción: ", ["1", "2", "3", "0"])
 
         if opcion == "1":
             try:
@@ -107,9 +105,6 @@ def menu_raices():
             except Exception as e:
                 mensaje_error(f"Error al ejecutar Secante: {e}")
             pausa()
-
-        elif opcion == "4":
-            menu_ejercicios_predefinidos()
 
         elif opcion == "0":
             break
