@@ -1,7 +1,7 @@
 """
 Interpolación polinomial de Newton por diferencias divididas.
 
-Implementación del pseudocódigo de la Figura 18.7 de:
+Implementación del pseudocódigo de la Figura 18.8 de:
 Chapra, S. C. y Canale, R. P. — "Métodos numéricos para ingenieros".
 
 El método construye una tabla de diferencias divididas finitas y evalúa el
@@ -16,7 +16,7 @@ def newt_int(x, y, xi):
     """
     Interpolación polinomial de Newton por diferencias divididas.
 
-    Reproduce la SUBROUTINE NewtInt de la Figura 18.7 de Chapra.
+    Reproduce la SUBROUTINE NewtInt de la Figura 18.8 de Chapra.
 
     Parámetros
     ----------
@@ -49,7 +49,7 @@ def newt_int(x, y, xi):
 
     # np = número de puntos de datos; n = grado máximo del polinomio.
     npts = len(x)          # equivale a n+1 en el pseudocódigo
-    n = npts - 1           # grado máximo (el 'n' de la Figura 18.7)
+    n = npts - 1           # grado máximo (el 'n' de la Figura 18.8)
 
     # ------------------------------------------------------------------
     # Tabla de diferencias divididas: matriz (n+1) x (n+1).
@@ -115,7 +115,7 @@ if __name__ == "__main__":
     for k in range(len(yint)):
         # Error verdadero relativo porcentual respecto a ln(2).
         et = abs((valor_real - yint[k]) / valor_real) * 100
-        ea_str = f"{ea[k]:>18.6f}" if not np.isnan(ea[k]) else f"{'---':>18}"
+        ea_str = f"{ea[k]:>18.7f}" if not np.isnan(ea[k]) else f"{'---':>18}"
         print(f"{k:>5} | {yint[k]:>16.6f} | {ea_str} | {et:>15.3f}%")
 
     print(f"\nResultado final (mayor orden): {yint[-1]:.6f}")

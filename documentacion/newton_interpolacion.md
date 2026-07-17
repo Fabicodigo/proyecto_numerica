@@ -1,7 +1,7 @@
 # Interpolación polinomial de Newton por diferencias divididas
 
 Documento explicativo del script [`newton_interpolacion.py`](newton_interpolacion.py).
-Implementa la **Figura 18.7** de Chapra & Canale, *Métodos numéricos para ingenieros*.
+Implementa la **Figura 18.8** de Chapra & Canale, *Métodos numéricos para ingenieros*.
 
 ---
 

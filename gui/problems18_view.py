@@ -11,7 +11,7 @@ from codigo.biseccion import biseccion
 
 
 # ----------------------------------------------------------------------
-# Datos de los enunciados (Chapra, cap. 18). La tabla de 18.5/18.6
+# Datos de los enunciados (Chapra, cap. 18). La tabla de 18.5/18.7
 # proviene del polinomio f(x) = x^3 - x^2 - x + 4, por lo que el valor
 # verdadero en x = 4 es f(4) = 48.
 # ----------------------------------------------------------------------
@@ -22,7 +22,7 @@ Y_ORDENADOS = [19, 99, 6, 291, 3]
 XI = 4.0
 VALOR_REAL = XI**3 - XI**2 - XI + 4
 
-# Problema 18.7: tabla de f(x) = 1/x (se corrige el error de
+# Problema 18.8: tabla de f(x) = 1/x (se corrige el error de
 # transcripción del enunciado: f(7) = 0.1429, no 1.1429).
 X_INVERSA = [2, 3, 4, 5, 6, 7]
 Y_INVERSA = [0.5, 0.3333, 0.25, 0.2, 0.1667, 0.1429]
@@ -31,8 +31,8 @@ Y_NODOS_INV = [0.3333, 0.25, 0.2, 0.1667]
 OBJETIVO = 0.23
 
 P185 = "Problema 18.5 (Newton)"
-P186 = "Problema 18.6 (Lagrange)"
-P187 = "Problema 18.7 (Interp. inversa)"
+P186 = "Problema 18.7 (Lagrange)"
+P187 = "Problema 18.8 (Interp. inversa)"
 
 SEP = "-" * 34
 
@@ -70,7 +70,7 @@ ENUNCIADOS = {
         "     ea[k] = yint[k+1] - yint[k]",
     ]),
     P186: "\n".join([
-        "ENUNCIADO (Chapra 18.6)",
+        "ENUNCIADO (Chapra 18.7)",
         SEP,
         "Repita el problema 18.5 con el",
         "empleo de polinomios de Lagrange",
@@ -95,7 +95,7 @@ ENUNCIADOS = {
         "   único.",
     ]),
     P187: "\n".join([
-        "ENUNCIADO (Chapra 18.7)",
+        "ENUNCIADO (Chapra 18.8)",
         SEP,
         "Emplee interpolación inversa, con",
         "un polinomio de interpolación",
@@ -395,7 +395,7 @@ class Problems18View(ctk.CTkFrame):
         )
 
         result_text = [
-            "=== PROBLEMA 18.6 - LAGRANGE ===",
+            "=== PROBLEMA 18.7 - LAGRANGE ===",
             "",
             "RESULTADOS",
             SEP,
@@ -432,7 +432,7 @@ class Problems18View(ctk.CTkFrame):
         self.ax.scatter(X_DATOS, Y_DATOS, label="Datos de la tabla", s=50, zorder=4)
         self.ax.scatter(xn3, yn3, label="Nodos usados", s=70, zorder=5, marker="s")
         self.ax.scatter([XI], [resultados[3]], label=f"f(4) = {resultados[3]:.4f}", s=80, zorder=6)
-        self.ax.set_title("18.6 — Interpolación de Lagrange en x = 4")
+        self.ax.set_title("18.7 — Interpolación de Lagrange en x = 4")
         self.ax.set_xlabel("x")
         self.ax.set_ylabel("f(x)")
         self.ax.grid(True, alpha=0.3)
@@ -471,7 +471,7 @@ class Problems18View(ctk.CTkFrame):
         )
 
         result_text = [
-            "=== PROBLEMA 18.7 - INT. INVERSA ===",
+            "=== PROBLEMA 18.8 - INT. INVERSA ===",
             "",
             "PLANTEAMIENTO",
             SEP,
@@ -512,7 +512,7 @@ class Problems18View(ctk.CTkFrame):
         self.ax.scatter(X_INVERSA, Y_INVERSA, label="Datos de la tabla (1/x)", s=50, zorder=4)
         self.ax.axhline(OBJETIVO, linestyle="--", color="gray", label=f"f(x) = {OBJETIVO}")
         self.ax.scatter([raiz], [OBJETIVO], label=f"Solución x = {raiz:.4f}", s=80, zorder=5)
-        self.ax.set_title("18.7 — Interpolación inversa (cúbica + bisección)")
+        self.ax.set_title("18.8 — Interpolación inversa (cúbica + bisección)")
         self.ax.set_xlabel("x")
         self.ax.set_ylabel("f(x)")
         self.ax.grid(True, alpha=0.3)

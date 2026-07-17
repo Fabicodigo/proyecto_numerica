@@ -1,7 +1,7 @@
-# Guía de problemas 18 resuelta con código (18.5, 18.7 y 18.8)
+# Guía de problemas 18 resuelta con código (18.5, 18.8 y 18.8)
 
 Documento explicativo del módulo [`guia_problemas_18.py`](../codigo/guia_problemas_18.py).
-Resuelve **con el código del proyecto** los problemas 18.5, 18.7 y 18.8 de
+Resuelve **con el código del proyecto** los problemas 18.5, 18.8 y 18.8 de
 Chapra & Canale, *Métodos numéricos para ingenieros* (Capítulo 18, Interpolación).
 
 La idea central: **no se reescribe ningún método**. El módulo reutiliza las
@@ -11,7 +11,7 @@ problema:
 | Problema | Método | Función reutilizada | Archivo |
 |----------|--------|--------------------|---------|
 | 18.5 | Newton (diferencias divididas) | `newt_int` | `codigo/newton_interpolacion.py` |
-| 18.7 | Lagrange | `lagrange` | `codigo/lagrange_interpolacion.py` |
+| 18.8 | Lagrange | `lagrange` | `codigo/lagrange_interpolacion.py` |
 | 18.8 | Interpolación inversa | `newt_int` + `biseccion` | `codigo/biseccion.py` |
 
 ## Cómo ejecutarlo desde el menú
@@ -19,7 +19,7 @@ problema:
 ```
 python main.py
   -> 3. Interpolación
-     -> 3. Resolver Guía de Problemas 18 (18.5, 18.7, 18.8)
+     -> 3. Resolver Guía de Problemas 18 (18.5, 18.8, 18.8)
 ```
 
 El submenú permite ejecutar cada problema por separado o todos de una vez,
@@ -28,7 +28,7 @@ de la bisección (igual que los ejercicios predefinidos de raíces).
 
 ---
 
-## 1. Datos comunes (18.5 y 18.7)
+## 1. Datos comunes (18.5 y 18.8)
 
 ```
 x    = [1, 2, 3, 5, 7, 8]
@@ -73,7 +73,7 @@ porque `b₄ = 0`: la señal práctica de que **un cúbico basta**.
 
 ---
 
-## 3. Problema 18.7 — Lagrange con `lagrange`
+## 3. Problema 18.8 — Lagrange con `lagrange`
 
 A diferencia de Newton, `lagrange` devuelve **una sola estimación** para un
 conjunto fijo de nodos. Cambiar de orden implica recalcular todo, así que se
@@ -105,7 +105,7 @@ mismo polinomio. La diferencia es práctica:
   cuando el grado ya está fijado (tres llamadas separadas).
 
 Esta asimetría se ve directamente en el código: 18.5 es *una* llamada a
-`newt_int`; 18.7 son *tres* llamadas a `lagrange`.
+`newt_int`; 18.8 son *tres* llamadas a `lagrange`.
 
 ---
 
@@ -175,5 +175,5 @@ un criterio de parada más exigente. Ambos caen en el rango esperado 4.33–4.35
 | Problema | Pregunta | Respuesta del código | Verificación |
 |----------|----------|----------------------|--------------|
 | 18.5 | `f(4)` con Newton, órdenes 1–4 | 59, 50, **48**, 48 | `f(4) = 48` exacto (datos cúbicos) |
-| 18.7 | `f(4)` con Lagrange, órdenes 1–3 | 59, 50, **48** | idéntico a Newton (unicidad) |
+| 18.8 | `f(4)` con Lagrange, órdenes 1–3 | 59, 50, **48** | idéntico a Newton (unicidad) |
 | 18.8 | `x` tal que `f(x) = 0.23` | **x ≈ 4.3418** | valor real `1/0.23 = 4.3478` |

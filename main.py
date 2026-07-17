@@ -158,7 +158,7 @@ def menu_interpolacion():
         titulo_principal("MÓDULO DE INTERPOLACIÓN")
         print("1. Newton")
         print("2. Lagrange")
-        print("3. Resolver Guía de Problemas 18 (18.5, 18.7, 18.8)")
+        print("3. Resolver Guía de Problemas 18 (18.5, 18.8, 18.8)")
         print("0. Volver")
 
         opcion = pedir_opcion("\nSeleccione una opción: ", ["1", "2", "3", "0"])
